@@ -36,7 +36,7 @@ public func DiagnosticsEngineTester(
 /// Helper to check diagnostics in the engine.
 final public class DiagnosticsEngineResult {
 
-    fileprivate var uncheckedDiagnostics: [Diagnostic]
+    fileprivate var uncheckedDiagnostics: OrderedSet<Diagnostic>
 
     init(_ engine: DiagnosticsEngine, ignoreNotes: Bool = false) {
         self.uncheckedDiagnostics = engine.diagnostics
@@ -82,7 +82,7 @@ final public class DiagnosticsEngineResult {
         })
 
         if let index = matchIndex {
-            uncheckedDiagnostics.remove(at: index)
+            uncheckedDiagnostics.remove(uncheckedDiagnostics[index])
         }
     }
 }

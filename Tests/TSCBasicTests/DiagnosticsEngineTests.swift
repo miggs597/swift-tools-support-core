@@ -46,6 +46,9 @@ class DiagnosticsEngineTests: XCTestCase {
     }
 
     func testMerging() {
+        // Test outdated
+        // Due to using an Ordered set for diagnostics, and all of these emits are the same
+        // they will not get added to the OrderedSet
         let engine1 = DiagnosticsEngine() 
         engine1.emit(
             .error(FooDiag(arr: ["foo", "bar"], str: "str", int: 2)),
@@ -62,11 +65,11 @@ class DiagnosticsEngineTests: XCTestCase {
             .error(FooDiag(arr: ["foo", "bar"], str: "str", int: 2)),
             location: FooLocation(name: "foo loc")
         )
-        XCTAssertEqual(engine2.diagnostics.count, 2)
+        XCTAssertEqual(engine2.diagnostics.count, 1)
 
         engine1.merge(engine2)
-        XCTAssertEqual(engine1.diagnostics.count, 3)
-        XCTAssertEqual(engine2.diagnostics.count, 2)
+        XCTAssertEqual(engine1.diagnostics.count, 1)
+        XCTAssertEqual(engine2.diagnostics.count, 1)
     }
 
     func testHandlers() {

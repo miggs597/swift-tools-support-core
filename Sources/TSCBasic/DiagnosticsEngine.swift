@@ -80,6 +80,16 @@ public struct Diagnostic: CustomStringConvertible {
     public var localizedDescription: String { message.text }
 }
 
+extension Diagnostic: Hashable {
+    public static func ==(lhs: Diagnostic, rhs: Diagnostic) -> Bool {
+        return lhs.localizedDescription == rhs.localizedDescription
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(localizedDescription)
+    }
+}
+
 public final class DiagnosticsEngine: CustomStringConvertible {
 
     public typealias DiagnosticsHandler = (Diagnostic) -> Void
@@ -91,10 +101,10 @@ public final class DiagnosticsEngine: CustomStringConvertible {
     private let handlerQueue = DispatchQueue(label: "\(DiagnosticsEngine.self)-callback")
 
     /// The diagnostics produced by the engine.
-    public var diagnostics: [Diagnostic] {
+    public var diagnostics: OrderedSet<Diagnostic> {
         return queue.sync { _diagnostics }
     }
-    private var _diagnostics: [Diagnostic] = []
+    private var _diagnostics = OrderedSet<Diagnostic>()
 
     /// The list of handlers to run when a diagnostic is emitted.
     ///

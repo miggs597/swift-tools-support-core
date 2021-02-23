@@ -46,30 +46,30 @@ class DiagnosticsEngineTests: XCTestCase {
     }
 
     func testMerging() {
-        // Test outdated
-        // Due to using an Ordered set for diagnostics, and all of these emits are the same
-        // they will not get added to the OrderedSet
         let engine1 = DiagnosticsEngine() 
         engine1.emit(
             .error(FooDiag(arr: ["foo", "bar"], str: "str", int: 2)),
             location: FooLocation(name: "foo loc")
         )
         XCTAssertEqual(engine1.diagnostics.count, 1)
-
+        
+        // Now that _diagnostics = OrderedSet<Diagnostics> only unique emits will be added
+        // that's why engine2 has unique warnings and why when meging with engine1 we only get 2
+        // for the count
         let engine2 = DiagnosticsEngine() 
         engine2.emit(
             .error(FooDiag(arr: ["foo", "bar"], str: "str", int: 2)),
             location: FooLocation(name: "foo loc")
         )
         engine2.emit(
-            .error(FooDiag(arr: ["foo", "bar"], str: "str", int: 2)),
-            location: FooLocation(name: "foo loc")
+            .error(FooDiag(arr: ["boo", "far"], str: "rts", int: 2)),
+            location: FooLocation(name: "col oof")
         )
-        XCTAssertEqual(engine2.diagnostics.count, 1)
+        XCTAssertEqual(engine2.diagnostics.count, 2)
 
         engine1.merge(engine2)
-        XCTAssertEqual(engine1.diagnostics.count, 1)
-        XCTAssertEqual(engine2.diagnostics.count, 1)
+        XCTAssertEqual(engine1.diagnostics.count, 2)
+        XCTAssertEqual(engine2.diagnostics.count, 2)
     }
 
     func testHandlers() {
